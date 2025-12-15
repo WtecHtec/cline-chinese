@@ -22,6 +22,12 @@ https://www.mcp-home.com/
 ## 文档地址(包括使用方法，MCP知识，常见问题解答等)
 https://hybridtalentcomputing.gitbook.io/cline-chinese-doc/
 
+## 活动
+<a href="https://tcnqigfvmci2.feishu.cn/wiki/Qui5wMIbdit8Jskjtz3cybwknVd" target="_blank" rel="noopener noreferrer">
+  <img src="https://github.com/user-attachments/assets/b0c02959-60c6-45f6-8114-03b269710582" alt="微信图片_20251215141911_125_566">
+</a>
+
+
 
 ## 赞助商
 <img width="100%" height="200" alt="胜算云" src="https://github.com/user-attachments/assets/5098e0e5-64e0-4184-b9bf-3f44da2f1f2c" />
