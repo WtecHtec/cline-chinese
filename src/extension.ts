@@ -533,12 +533,17 @@ function setupHostProvider(context: ExtensionContext) {
 	HostProvider.initialize(createWebview, createDiffView, vscodeHostBridgeClient, outputChannel.appendLine, getCallbackUri)
 }
 
+import { DevTunnelService } from "./services/dev-tunnel/DevTunnelService"
+
 // 当您的扩展被停用时会调用此方法
 export async function deactivate() {
 	tearDown()
 
 	// 清理测试模式
 	cleanupTestMode()
+
+	// Stop DevTunnel service
+	await DevTunnelService.getInstance().stop()
 
 	Logger.log("Cline Chinese 扩展已停用")
 }

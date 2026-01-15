@@ -63,6 +63,9 @@ const AutoApproveBar = ({ style }: AutoApproveBarProps) => {
 			...minusFavorites.map((action, index) => (
 				<span className="text-[color:var(--vscode-foreground-muted)] opacity-60" key={action?.id}>
 					{action?.shortName}
+					{action?.id === "useDevTunnel" && autoApprovalSettings.devTunnelPort && (
+						<span className="ml-1 text-xs opacity-80">(http://localhost:{autoApprovalSettings.devTunnelPort})</span>
+					)}
 					{index < minusFavorites.length - 1 && ","}
 				</span>
 			)),

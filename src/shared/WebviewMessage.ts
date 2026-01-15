@@ -1,7 +1,11 @@
 export interface WebviewMessage {
-	type: "grpc_request" | "grpc_request_cancel"
+	type: "grpc_request" | "grpc_request_cancel" | "dev_tunnel_response"
 	grpc_request?: GrpcRequest
 	grpc_request_cancel?: GrpcCancel
+	dev_tunnel_response?: {
+		request_id: string
+		success: boolean
+	}
 }
 
 export type GrpcRequest = {

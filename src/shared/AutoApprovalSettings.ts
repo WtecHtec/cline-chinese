@@ -13,11 +13,13 @@ export interface AutoApprovalSettings {
 		executeAllCommands?: boolean // Execute all commands
 		useBrowser: boolean // Use browser
 		useMcp: boolean // Use MCP servers
+		useDevTunnel: boolean // Use DevTunnel
 	}
 	// Global settings
 	maxRequests: number // Maximum number of auto-approved requests
 	enableNotifications: boolean // Show notifications for approval and task completion
 	favorites: string[] // IDs of actions favorited by the user for quick access
+	devTunnelPort?: number // Port for the DevTunnel service
 }
 
 export const DEFAULT_AUTO_APPROVAL_SETTINGS: AutoApprovalSettings = {
@@ -32,6 +34,7 @@ export const DEFAULT_AUTO_APPROVAL_SETTINGS: AutoApprovalSettings = {
 		executeAllCommands: false,
 		useBrowser: false,
 		useMcp: false,
+		useDevTunnel: false,
 	},
 	maxRequests: 20,
 	enableNotifications: false,

@@ -2,15 +2,16 @@ import axios from "axios"
 import * as vscode from "vscode"
 import { getNonce } from "./getNonce"
 
-import { WebviewProviderType } from "@/shared/webview/types"
-import { Controller } from "@core/controller/index"
-import { findLast } from "@shared/array"
+import { WebviewProviderType } from "../../shared/webview/types"
+import { Controller } from "../controller/index"
+import { findLast } from "../../shared/array"
 import { readFile } from "fs/promises"
 import path from "node:path"
 import { v4 as uuidv4 } from "uuid"
 import { Uri } from "vscode"
-import { HostProvider } from "@/hosts/host-provider"
-import { ShowMessageType } from "@/shared/proto/host/window"
+import { HostProvider } from "../../hosts/host-provider"
+import { ShowMessageType } from "../../shared/proto/host/window"
+import { ExtensionMessage } from "../../shared/ExtensionMessage"
 
 export abstract class WebviewProvider {
 	private static activeInstances: Set<WebviewProvider> = new Set()
@@ -129,6 +130,12 @@ export abstract class WebviewProvider {
 	 * @returns True if the webview is visible, false otherwise
 	 */
 	abstract isVisible(): boolean
+
+	/**
+	 * Sends a message to the webview.
+	 * @param message The message to send
+	 */
+	abstract postMessageToWebview(message: ExtensionMessage): Promise<boolean | undefined>
 
 	/**
 	 * Defines and returns the HTML that should be rendered within the webview panel.

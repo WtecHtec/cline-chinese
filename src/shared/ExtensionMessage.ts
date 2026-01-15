@@ -12,8 +12,12 @@ import { McpDisplayMode } from "./McpDisplayMode"
 
 // webview will hold state
 export interface ExtensionMessage {
-	type: "grpc_response" // New type for gRPC responses
+	type: "grpc_response" | "dev_tunnel_data" // New type for gRPC responses
 	grpc_response?: GrpcResponse
+	dev_tunnel_data?: {
+		data: any
+		request_id: string
+	}
 }
 
 export type GrpcResponse = {

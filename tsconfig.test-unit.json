@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"paths": {
+			"vscode": ["src/test/mocks/vscode.ts"],
+			"@/*": ["src/*"],
+			"@api/*": ["src/api/*"],
+			"@core/*": ["src/core/*"],
+			"@generated/*": ["src/generated/*"],
+			"@hosts/*": ["src/hosts/*"],
+			"@integrations/*": ["src/integrations/*"],
+			"@packages/*": ["src/packages/*"],
+			"@services/*": ["src/services/*"],
+			"@shared/*": ["src/shared/*"],
+			"@utils/*": ["src/utils/*"]
+		}
+	}
+}

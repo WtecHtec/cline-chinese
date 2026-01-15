@@ -9,6 +9,7 @@ import type { ExtensionMessage } from "@/shared/ExtensionMessage"
 import type { WebviewProviderType } from "@/shared/webview/types"
 import { WebviewMessage } from "@/shared/WebviewMessage"
 import { handleGrpcRequest, handleGrpcRequestCancel } from "@/core/controller/grpc-handler"
+import { DevTunnelService } from "@/services/dev-tunnel/DevTunnelService"
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -210,6 +211,16 @@ export class VscodeWebviewProvider extends WebviewProvider implements vscode.Web
 				}
 				break
 			}
+			case "dev_tunnel_response": {
+				if (message.dev_tunnel_response) {
+					const devTunnelService = DevTunnelService.getInstance()
+					devTunnelService.handleDevTunnelResponse(
+						message.dev_tunnel_response.request_id,
+						message.dev_tunnel_response.success,
+					)
+				}
+				break
+			}
 			default: {
 				console.error("Received unhandled WebviewMessage type:", JSON.stringify(message))
 			}
@@ -222,7 +233,7 @@ export class VscodeWebviewProvider extends WebviewProvider implements vscode.Web
 	 * @param message - The message to send to the webview
 	 * @returns A thenable that resolves to a boolean indicating success, or undefined if the webview is not available
 	 */
-	private async postMessageToWebview(message: ExtensionMessage): Promise<boolean | undefined> {
+	public async postMessageToWebview(message: ExtensionMessage): Promise<boolean | undefined> {
 		return this.webview?.webview.postMessage(message)
 	}
 

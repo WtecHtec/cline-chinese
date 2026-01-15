@@ -86,6 +86,7 @@ message AutoApprovalSettingsRequest {
     bool execute_all_commands = 6;
     bool use_browser = 7;
     bool use_mcp = 8;
+    bool use_dev_tunnel = 9;
   }
   int32 version = 2;
   bool enabled = 3;
@@ -93,6 +94,7 @@ message AutoApprovalSettingsRequest {
   int32 max_requests = 5;
   bool enable_notifications = 6;
   repeated string favorites = 7;
+  int32 dev_tunnel_port = 10;
 }
 
 enum TelemetrySettingEnum {

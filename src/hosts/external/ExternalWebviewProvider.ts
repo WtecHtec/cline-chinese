@@ -2,6 +2,7 @@ import { WebviewProviderType } from "@/shared/webview/types"
 import { WebviewProvider } from "@/core/webview"
 import * as vscode from "vscode"
 import { URI } from "vscode-uri"
+import { ExtensionMessage } from "@/shared/ExtensionMessage"
 
 export class ExternalWebviewProvider extends WebviewProvider {
 	// This hostname cannot be changed without updating the external webview handler.
@@ -25,5 +26,9 @@ export class ExternalWebviewProvider extends WebviewProvider {
 	}
 	protected override isActive(): boolean {
 		return true
+	}
+
+	override async postMessageToWebview(message: ExtensionMessage): Promise<boolean | undefined> {
+		return undefined
 	}
 }

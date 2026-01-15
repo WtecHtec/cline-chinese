@@ -4,12 +4,13 @@ import { combineCommandSequences } from "@shared/combineCommandSequences"
 import type { ClineApiReqInfo, ClineMessage } from "@shared/ExtensionMessage"
 import { getApiMetrics } from "@shared/getApiMetrics"
 import { BooleanRequest, EmptyRequest, StringRequest } from "@shared/proto/cline/common"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useMount } from "react-use"
 import { normalizeApiConfiguration } from "@/components/settings/utils/providerUtils"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { FileServiceClient, UiServiceClient } from "@/services/grpc-client"
 import { Navbar } from "../menu/Navbar"
+import { vscode } from "@/utils/vscode"
 // Import utilities and hooks from the new structure
 import {
 	ActionButtons,
@@ -26,6 +27,7 @@ import {
 	useScrollBehavior,
 	WelcomeSection,
 } from "./chat-view"
+import { BUTTON_CONFIGS, getButtonConfig } from "./chat-view/shared/buttonConfig"
 import AutoApproveBar from "./auto-approve-menu/AutoApproveBar"
 
 interface ChatViewProps {
@@ -90,6 +92,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		setExpandedRows,
 		textAreaRef,
 	} = chatState
+
+	const [pendingDevTunnelRequestId, setPendingDevTunnelRequestId] = useState<string | undefined>(undefined)
 
 	useEffect(() => {
 		const handleCopy = async (e: ClipboardEvent) => {
@@ -299,6 +303,66 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		}
 	}, [isHidden, sendingDisabled, enableButtons])
 
+	useEffect(() => {
+		const handleMessage = async (event: MessageEvent) => {
+			const message = event.data
+			if (message.type === "dev_tunnel_data" && message.dev_tunnel_data) {
+				console.log("[ChatView] Received dev_tunnel_data:", message.dev_tunnel_data)
+				let data = message.dev_tunnel_data
+				let requestId: string | undefined
+
+				// Check if data is wrapped with request_id
+				if (typeof data === "object" && data !== null && "request_id" in data && "data" in data) {
+					requestId = data.request_id
+					data = data.data
+				}
+
+				try {
+					await messageHandlers.handleSendMessage(data, [], [])
+					if (requestId) {
+						setPendingDevTunnelRequestId(requestId)
+					}
+				} catch (error) {
+					console.error("[ChatView] Error handling dev_tunnel_data:", error)
+					if (requestId) {
+						vscode.postMessage({
+							type: "dev_tunnel_response",
+							dev_tunnel_response: {
+								request_id: requestId,
+								success: false,
+							},
+						})
+					}
+				}
+			}
+		}
+		window.addEventListener("message", handleMessage)
+		return () => {
+			window.removeEventListener("message", handleMessage)
+		}
+	}, [messageHandlers])
+
+	// Monitor button state to send pending DevTunnel response
+	useEffect(() => {
+		if (pendingDevTunnelRequestId) {
+			const lastMessage = modifiedMessages.at(-1)
+
+			// Check if the last message indicates completion
+			const isTaskCompleted = lastMessage?.ask === "completion_result"
+
+			if (isTaskCompleted) {
+				vscode.postMessage({
+					type: "dev_tunnel_response",
+					dev_tunnel_response: {
+						request_id: pendingDevTunnelRequestId,
+						success: true,
+					},
+				})
+				setPendingDevTunnelRequestId(undefined)
+			}
+		}
+	}, [modifiedMessages, pendingDevTunnelRequestId])
+
 	const visibleMessages = useMemo(() => {
 		return filterVisibleMessages(modifiedMessages)
 	}, [modifiedMessages])
@@ -322,10 +386,11 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	const scrollBehavior = useScrollBehavior(messages, visibleMessages, groupedMessages, expandedRows, setExpandedRows)
 
 	const placeholderText = useMemo(() => {
-		const text = task ? "Type a message..." : "Type your task here..."
+		const text = task ? "Type a message 消息..." : "Type your task here 任务..."
 		return text
 	}, [task])
 
+	console.log("placeholderText----", placeholderText)
 	return (
 		<ChatLayout isHidden={isHidden}>
 			<div className="flex flex-col flex-1 overflow-hidden">

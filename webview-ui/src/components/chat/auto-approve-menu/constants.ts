@@ -49,8 +49,7 @@ export const ACTION_METADATA: ActionMetadata[] = [
 		id: "executeSafeCommands",
 		label: "执行安全命令",
 		shortName: "安全命令",
-		description:
-			"允许 Cline 执行安全的终端命令。如果模型确定命令可能具有破坏性，仍需要批准。",
+		description: "允许 Cline 执行安全的终端命令。如果模型确定命令可能具有破坏性，仍需要批准。",
 		icon: "codicon-terminal",
 		subAction: {
 			id: "executeAllCommands",
@@ -74,6 +73,13 @@ export const ACTION_METADATA: ActionMetadata[] = [
 		shortName: "MCP",
 		description: "允许 Cline 使用配置的 MCP 服务器，这些服务器可能会修改文件系统或与 API 交互。",
 		icon: "codicon-server",
+	},
+	{
+		id: "useDevTunnel",
+		label: "DevTunnel",
+		shortName: "DevTunnel",
+		description: "开启一个本地 HTTP 服务 (端口 3000)。",
+		icon: "codicon-broadcast",
 	},
 ]
 

@@ -2,6 +2,7 @@ import { Controller } from ".."
 import { AutoApprovalSettingsRequest } from "@shared/proto/cline/state"
 import { Empty } from "@shared/proto/cline/common"
 import { convertProtoToAutoApprovalSettings } from "../../../shared/proto-conversions/models/auto-approval-settings-conversion"
+import { DevTunnelService } from "../../../services/dev-tunnel/DevTunnelService"
 
 /**
  * Updates the auto approval settings
@@ -22,6 +23,26 @@ export async function updateAutoApprovalSettings(controller: Controller, request
 
 		if (controller.task) {
 			controller.task.updateAutoApprovalSettings(settings)
+		}
+
+		// Handle DevTunnel service
+		const devTunnelService = DevTunnelService.getInstance()
+		devTunnelService.setController(controller)
+		if (settings.actions.useDevTunnel) {
+			if (!devTunnelService.isRunning()) {
+				try {
+					await devTunnelService.start()
+				} catch (error) {
+					// Revert setting if start failed
+					settings.actions.useDevTunnel = false
+					controller.cacheService.setGlobalState("autoApprovalSettings", settings)
+					// We might want to notify frontend to revert UI, but for now state update will handle it on next poll/push
+				}
+			}
+		} else {
+			if (devTunnelService.isRunning()) {
+				await devTunnelService.stop()
+			}
 		}
 
 		await controller.postStateToWebview()
