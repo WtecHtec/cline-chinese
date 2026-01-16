@@ -71,16 +71,19 @@ export class DevTunnelService {
 							},
 						})
 						// Set a timeout to clean up pending requests if no response is received
-						setTimeout(() => {
-							if (this.pendingRequests.has(requestId)) {
-								const pendingRes = this.pendingRequests.get(requestId)
-								if (pendingRes) {
-									pendingRes.writeHead(504, { "Content-Type": "application/json" })
-									pendingRes.end(JSON.stringify({ message: "Timeout waiting for frontend response" }))
+						setTimeout(
+							() => {
+								if (this.pendingRequests.has(requestId)) {
+									const pendingRes = this.pendingRequests.get(requestId)
+									if (pendingRes) {
+										pendingRes.writeHead(504, { "Content-Type": "application/json" })
+										pendingRes.end(JSON.stringify({ message: "Timeout waiting for frontend response" }))
+									}
+									this.pendingRequests.delete(requestId)
 								}
-								this.pendingRequests.delete(requestId)
-							}
-						}, 30000) // 30 seconds timeout
+							},
+							5 * 60 * 1000,
+						) // 30 seconds timeout
 					} else {
 						res.writeHead(503, { "Content-Type": "application/json" })
 						res.end(JSON.stringify({ message: "No visible webview to handle request" }))
