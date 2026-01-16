@@ -62,16 +62,27 @@ const AutoApproveBar = ({ style }: AutoApproveBarProps) => {
 			) : null,
 			...minusFavorites.map((action, index) => (
 				<span className="text-[color:var(--vscode-foreground-muted)] opacity-60" key={action?.id}>
-					{action?.shortName}
 					{action?.id === "useDevTunnel" && autoApprovalSettings.devTunnelPort && (
 						<span className="ml-1 text-xs opacity-80">(http://localhost:{autoApprovalSettings.devTunnelPort})</span>
 					)}
+					{action?.shortName}
+
 					{index < minusFavorites.length - 1 && ","}
 				</span>
 			)),
 		]
 	}
 
+	const getQuickAccessDevTunnelUrl = () => {
+		if (autoApprovalSettings.actions.useDevTunnel) {
+			return (
+				<span className="ml-1 text-xs opacity-80">
+					DevTunnel: (http://localhost:{autoApprovalSettings.devTunnelPort})
+				</span>
+			)
+		}
+		return null
+	}
 	return (
 		<div
 			className="px-[10px] mx-[5px] select-none rounded-[10px_10px_0_0]"
@@ -103,7 +114,7 @@ const AutoApproveBar = ({ style }: AutoApproveBarProps) => {
 					<span className="codicon codicon-chevron-up" />
 				)}
 			</div>
-
+			<span className="text-[color:var(--vscode-foreground-muted)] opacity-60"> {getQuickAccessDevTunnelUrl()} </span>
 			<AutoApproveModal
 				isVisible={isModalVisible}
 				setIsVisible={setIsModalVisible}

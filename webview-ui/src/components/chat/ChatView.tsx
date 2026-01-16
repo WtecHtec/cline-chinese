@@ -316,6 +316,12 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					requestId = data.request_id
 					data = data.data
 				}
+				try {
+					const jsonData = JSON.parse(data)
+					data = jsonData.data
+				} catch (error) {
+					console.error("[ChatView] Error parsing dev_tunnel_data:", error)
+				}
 
 				try {
 					await messageHandlers.handleSendMessage(data, [], [])
@@ -345,11 +351,9 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	// Monitor button state to send pending DevTunnel response
 	useEffect(() => {
 		if (pendingDevTunnelRequestId) {
-			const lastMessage = modifiedMessages.at(-1)
-
 			// Check if the last message indicates completion
-			const isTaskCompleted = lastMessage?.ask === "completion_result"
-
+			const isTaskCompleted = !sendingDisabled
+			console.log("[ChatView] isTaskCompleted:", sendingDisabled)
 			if (isTaskCompleted) {
 				vscode.postMessage({
 					type: "dev_tunnel_response",
@@ -361,7 +365,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				setPendingDevTunnelRequestId(undefined)
 			}
 		}
-	}, [modifiedMessages, pendingDevTunnelRequestId])
+	}, [pendingDevTunnelRequestId, sendingDisabled])
 
 	const visibleMessages = useMemo(() => {
 		return filterVisibleMessages(modifiedMessages)
@@ -386,11 +390,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	const scrollBehavior = useScrollBehavior(messages, visibleMessages, groupedMessages, expandedRows, setExpandedRows)
 
 	const placeholderText = useMemo(() => {
-		const text = task ? "Type a message 消息..." : "Type your task here 任务..."
+		const text = task ? "Type a message ..." : "Type your task here ..."
 		return text
 	}, [task])
 
-	console.log("placeholderText----", placeholderText)
 	return (
 		<ChatLayout isHidden={isHidden}>
 			<div className="flex flex-col flex-1 overflow-hidden">

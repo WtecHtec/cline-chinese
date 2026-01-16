@@ -25,7 +25,7 @@ export class DevTunnelService {
 		this.controller = controller
 	}
 
-	public async start(preferredPort: number = 3000): Promise<void> {
+	public async start(preferredPort: number = 5273): Promise<void> {
 		if (this.server) {
 			if (this.port === preferredPort) {
 				return // Already running on the same port

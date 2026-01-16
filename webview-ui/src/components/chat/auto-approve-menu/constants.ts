@@ -78,7 +78,7 @@ export const ACTION_METADATA: ActionMetadata[] = [
 		id: "useDevTunnel",
 		label: "DevTunnel",
 		shortName: "DevTunnel",
-		description: "开启一个本地 HTTP 服务 (端口 3000)。",
+		description: "开启一个本地 HTTP 服务 (端口 5273)。",
 		icon: "codicon-broadcast",
 	},
 ]
